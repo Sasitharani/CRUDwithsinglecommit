@@ -1,41 +1,48 @@
 const { ObjectId } = require("mongodb");
 const { dbConnection } = require("../../../dbConnection");
 const { transporter } = require("../../../mailConfig");
-const Swal = require('sweetalert2');
+const Swal = require("sweetalert2");
 
 let studentInsert = async (req, res) => {
-
-
-    let { uname, email, phone } = req.body;
-    let obj = {
-        uname,
-        email,
-        phone
-    };
-    if(req.file){
-        if (req.file.filename){
-            obj['photo']=req.file.filename
-        }
+  let { uname, email, phone } = req.body;
+  let obj = {
+    uname,
+    email,
+    phone,
+  };
+  if (req.file) {
+    if (req.file.filename) {
+      obj["photo"] = req.file.filename;
     }
-    try {
-        Swal.fire('Working');
-        let db = await dbConnection();
-        let studentTable = await db.collection("student");
-        let finalres = await studentTable.insertOne(obj);
-        let emailExists = await studentTable.findOne({ "email": email });
-       
-        if (emailExists != undefined && emailExists !== null && emailExists !== "") {
-           // Swal.fire('Email exists');
-        } else {
-            //Swal.fire('Email does not exist');
-        }
+  }
+  try {
+    let db = await dbConnection();
+    let studentTable = await db.collection("student");
+    let finalres = await studentTable.insertOne(obj);
+    let emailExists = await studentTable.findOne({ email: email });
+    let apiobj = {
+        status: true,
+        message: finalres,
+        check:'email exists',
+        check2:'email unique'
+      };
+    if (
+      emailExists != undefined &&
+      emailExists !== null &&
+      emailExists !== ""
+    ) {
+ 
+          res.send(apiobj.check);
+    } else { 
+         res.send(apiobj.check2);
+    }
 
-        const info = await transporter.sendMail({
-            from: '"Enquiry mail 👻" <sasitharani@gmail.com>', // sender address
-            to: "sasitharani@gmail.com", // list of receivers
-            subject: "Contact Enquiry Form", // Subject line
-            text: "Contact Enquiry Form", // plain text body
-            html: `<html>
+    const info = await transporter.sendMail({
+      from: '"Enquiry mail 👻" <sasitharani@gmail.com>', // sender address
+      to: "sasitharani@gmail.com", // list of receivers
+      subject: "Contact Enquiry Form", // Subject line
+      text: "Contact Enquiry Form", // plain text body
+      html: `<html>
                     <head>
                     </head>
                     <body>
@@ -55,55 +62,55 @@ let studentInsert = async (req, res) => {
                         </table>
                     </body>
             </html>`, // html body
-        });
+    });
 
-        const infouser = await transporter.sendMail({
-            from: '"Enquiry mail 👻" <sasitharani@gmail.com>', // sender address
-            to: email, // list of receivers
-            subject: "Thank You", // Subject line
-            text: "Contact Enquiry Form", // plain text body
-            html: `<html>
+    const infouser = await transporter.sendMail({
+      from: '"Enquiry mail 👻" <sasitharani@gmail.com>', // sender address
+      to: email, // list of receivers
+      subject: "Thank You", // Subject line
+      text: "Contact Enquiry Form", // plain text body
+      html: `<html>
                     <head>
                     </head>
                     <body>
                         Thanks for Enquiry
                     </body>
             </html>`, // html body
-        });
+    });
 
-        let apiobj = {
-            status: true,
-            message: finalres
-        };
-        res.send(apiobj);
-    } catch (error) {
-        res.send(error);
-    }
+    // let apiobj = {
+    //   status: true,
+    //   message: finalres,
+    //   check:'oklk;j;lj'
+    // };
+    // res.send(apiobj.check);
+  } catch (error) {
+    res.send(error);
+  }
 };
 
 let studentView = async (req, res) => {
-    let db = await dbConnection();
-    let studentTable = await db.collection("student");
-    let studentList = await studentTable.find().toArray();
-    let obj = {
-        status: 1,
-        path:'http://localhost:8000/upload/student/',
-        data: studentList
-    };
-    res.send(obj);
+  let db = await dbConnection();
+  let studentTable = await db.collection("student");
+  let studentList = await studentTable.find().toArray();
+  let obj = {
+    status: 1,
+    path: "http://localhost:8000/upload/student/",
+    data: studentList,
+  };
+  res.send(obj);
 };
 
 let studentDelete = async (req, res) => {
-    let id = req.params.id;
-    let db = await dbConnection();
-    let studentTable = await db.collection("student");
-    let delRes = await studentTable.deleteOne({ _id: new ObjectId(id) });
-    let obj = {
-        status: true,
-        message: delRes
-    };
-    res.send(obj);
+  let id = req.params.id;
+  let db = await dbConnection();
+  let studentTable = await db.collection("student");
+  let delRes = await studentTable.deleteOne({ _id: new ObjectId(id) });
+  let obj = {
+    status: true,
+    message: delRes,
+  };
+  res.send(obj);
 };
 
 module.exports = { studentInsert, studentView, studentDelete };
-

@@ -20,7 +20,7 @@ export default function Home() {
     let formDataValue = new FormData(event.target)
     axios.post(`http://localhost:8000/website/home/student-insert`,formDataValue)
       .then((res) => {
-        //console.log(res.data)
+        console.log(res)
         setLoader(false)
         event.target.reset();
         getStudent()
@@ -34,7 +34,7 @@ export default function Home() {
       .then((res) => res.data)
       .then((finalRes) => {
         if (finalRes.status) {
-          console.log(finalRes)
+          //console.log(finalRes)
           setStudent(finalRes.data)
           setPath(finalRes.path)
         }
@@ -123,7 +123,7 @@ export default function Home() {
               required
             />
           </div>
-          <td className="mb-6">
+       
             <label
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               for="fileUpload"
@@ -135,7 +135,7 @@ export default function Home() {
               name="photo"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-5"
             />
-          </td>
+        
           {seeLoader ? (
             <button className="flex items-center justify-center px-4 py-2 w-full bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
               <svg
@@ -190,6 +190,9 @@ export default function Home() {
                   Student Phone
                 </th>
                 <th scope="col" className="px-6 py-3">
+                 Photo
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Delete
                 </th>
               </tr>
@@ -222,14 +225,7 @@ export default function Home() {
                           Delete
                         </button>
                       </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => deleteRow(items._id)}
-                          className="p-3 bg-blue-600 text-white"
-                        >
-                          Delete
-                        </button>
-                      </td>
+         
                     </tr>
                   );
                 })
